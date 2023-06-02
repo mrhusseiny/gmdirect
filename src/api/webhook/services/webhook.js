@@ -69,27 +69,24 @@ const createPayment = async (mandate_id) => {
 
 const createCustomer = async ({
   email,
-  first_name,
-  last_name,
+  given_name,
+  family_name,
   address_line1,
   address_line2,
   city,
   postal_code,
   country_code,
-  driver_id,
 }) => {
+  console.log();
   return client.customers.create({
     email,
-    given_name: first_name,
-    family_name: last_name,
+    given_name,
+    family_name,
     address_line1,
     address_line2,
     city,
     postal_code,
     country_code,
-    metadata: {
-      local_id: driver_id,
-    },
   });
 };
 

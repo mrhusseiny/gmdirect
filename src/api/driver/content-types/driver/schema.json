@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "drivers",
+  "info": {
+    "singularName": "driver",
+    "pluralName": "drivers",
+    "displayName": "Driver",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "given_name": {
+      "type": "string"
+    },
+    "family_name": {
+      "type": "string"
+    },
+    "address_line1": {
+      "type": "string"
+    },
+    "address_line2": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "postal_code": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "country_code": {
+      "type": "string"
+    },
+    "payment_status": {
+      "type": "string",
+      "default": "not-payed"
+    },
+    "gc_customer_id": {
+      "type": "string"
+    }
+  }
+}
