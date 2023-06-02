@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gc_events",
+  "info": {
+    "singularName": "gc-event",
+    "pluralName": "gc-events",
+    "displayName": "GcEvent",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "event_id": {
+      "type": "string"
+    },
+    "resource_type": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    },
+    "links": {
+      "type": "json"
+    },
+    "details": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "event_created_at": {
+      "type": "string"
+    }
+  }
+}
