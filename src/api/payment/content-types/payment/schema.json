@@ -4,7 +4,8 @@
   "info": {
     "singularName": "payment",
     "pluralName": "payments",
-    "displayName": "Payment"
+    "displayName": "Payment",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -25,6 +26,16 @@
     },
     "date": {
       "type": "datetime"
+    },
+    "status": {
+      "type": "string",
+      "default": "init",
+      "unique": true
+    },
+    "payment_id": {
+      "type": "string",
+      "unique": true,
+      "required": false
     }
   }
 }

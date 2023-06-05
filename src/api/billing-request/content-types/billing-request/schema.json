@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "billing_requests",
+  "info": {
+    "singularName": "billing-request",
+    "pluralName": "billing-requests",
+    "displayName": "BillingRequest",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "billing_request_id": {
+      "type": "string",
+      "unique": true
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "mandate_id": {
+      "type": "string"
+    },
+    "mandate_status": {
+      "type": "string",
+      "default": "init"
+    },
+    "flow_id": {
+      "type": "string"
+    },
+    "authorization_url": {
+      "type": "string"
+    },
+    "details": {
+      "type": "text"
+    }
+  }
+}
