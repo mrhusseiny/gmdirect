@@ -29,15 +29,6 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/billing-request-flows",
-      handler: "gocardless.getFlowDetails",
-      confirm: {
-        policies: [],
-        middlewares: [],
-      },
-    },
-    {
-      method: "GET",
       path: "/customers",
       handler: "gocardless.getCustomerDetails",
       confirm: {
