@@ -14,7 +14,7 @@ const gocardless = require("gocardless-nodejs");
 const constants = require("gocardless-nodejs/constants");
 
 const client = gocardless(
-  "sandbox_gGzgkv3ThVLLvFl9vkHqrVyB-tMyUwqj5sv-Uaf3",
+  process.env.GOCARDLESS_SECRET,
   constants.Environments.Sandbox
 );
 
