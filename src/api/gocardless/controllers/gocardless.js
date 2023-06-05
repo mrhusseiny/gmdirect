@@ -1,14 +1,12 @@
 "use strict";
 
 const {
-  getPaymentDetails,
+  getPayment,
   getBillingRequest,
   getMandate,
   createBillingRequestFlow,
-  getPayment,
   getCustomer,
-  getBillingRequestFlow,
-  getMandateForBillingRequest,
+  getMandatesForBillingRequest,
   createWeeklyPayment,
 } = require("../services/gocardless");
 
@@ -18,7 +16,7 @@ const {} = require("@strapi/strapi").factories;
  */
 
 async function syncPayment(event, entityService) {
-  const payment = await getPaymentDetails(event.links.payment);
+  const payment = await getPayment(event.links.payment);
   if (!payment) {
     return;
   }
@@ -54,7 +52,7 @@ async function syncPayment(event, entityService) {
 
 async function syncBillingRequest(event, entityService) {
   const br = await getBillingRequest(event.links.billing_request);
-  const mandate = await getMandateForBillingRequest(
+  const mandate = await getMandatesForBillingRequest(
     event.links.customer,
     br.metadata.shared_link
   );
@@ -114,9 +112,6 @@ module.exports = {
   },
   getCustomerDetails: async (ctx) => {
     return getCustomer(ctx.query.id);
-  },
-  getFlowDetails: async (ctx) => {
-    return getBillingRequestFlow(ctx.query.id);
   },
 
   generateFlow: async (ctx) => {
