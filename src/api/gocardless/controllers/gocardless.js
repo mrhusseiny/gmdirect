@@ -20,10 +20,16 @@ async function customUpdate(uid, filter_fields, data) {
     .findMany(uid, filter_fields)
     .catch((e) => []);
   for (const record of records) {
-    strapi.entityService.update(uid, record.id, { data }).catch((e) => {
-      console.log("!------------Error-----------");
-      console.log(e);
-    });
+    if (
+      record[Object.keys(filter_fields)[0]] ===
+      filter_fields[Object.keys(filter_fields)[0]]
+    ) {
+      console.log("updating...:", record);
+      strapi.entityService.update(uid, record.id, { data }).catch((e) => {
+        console.log("!------------Error-----------");
+        console.log(e);
+      });
+    }
   }
 }
 
