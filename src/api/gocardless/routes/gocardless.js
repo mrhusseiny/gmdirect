@@ -13,16 +13,16 @@ module.exports = {
       method: "GET",
       path: "/mandates",
       handler: "gocardless.getMandateDetails",
-      confirm: {
+      config: {
         policies: [],
         middlewares: [],
       },
     },
     {
       method: "GET",
-      path: "/billing-requests",
+      path: "/gc/billing-requests",
       handler: "gocardless.getBillingRequestDetails",
-      confirm: {
+      config: {
         policies: [],
         middlewares: [],
       },
@@ -31,7 +31,7 @@ module.exports = {
       method: "GET",
       path: "/customers",
       handler: "gocardless.getCustomerDetails",
-      confirm: {
+      config: {
         policies: [],
         middlewares: [],
       },
@@ -40,7 +40,7 @@ module.exports = {
       method: "GET",
       path: "/payments",
       handler: "gocardless.getPaymentDetails",
-      confirm: {
+      config: {
         policies: [],
         middlewares: [],
       },
@@ -49,7 +49,25 @@ module.exports = {
       method: "GET",
       path: "/generate-flow",
       handler: "gocardless.generateFlow",
-      confirm: {
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: "GET",
+      path: "/billing-request-mandates",
+      handler: "gocardless.getMandatesForBillingRequestList",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: "GET",
+      path: "/gc/create-payment",
+      handler: "gocardless.createPayment",
+      config: {
         policies: [],
         middlewares: [],
       },

@@ -17,6 +17,7 @@ const {} = require("@strapi/strapi").factories;
 
 async function syncPayment(event, entityService) {
   const payment = await getPayment(event.links.payment);
+  console.log("*****************Payment Event****************");
   if (!payment) {
     return;
   }
@@ -25,61 +26,66 @@ async function syncPayment(event, entityService) {
   });
 
   if (findResult.length === 1) {
-    entityService.update(
-      "api::payment.payment",
-      { payment_id: payment.id },
-      {
-        amount: payment.amount,
-        status: payment.status,
-        remarks: payment.description,
-        reference: payment.reference,
-      }
-    );
+    console.log("updating payment in database");
+    entityService
+      .update(
+        "api::payment.payment",
+        { payment_id: payment.id },
+        {
+          amount: payment.amount,
+          status: payment.status,
+          remarks: payment.description,
+          reference: payment.reference,
+        }
+      )
+      .catch((e) => console.log("failed to update payment in db", e.message));
   } else {
-    entityService.create("api::payment.payment", {
-      data: {
-        amount: payment.amount,
-        status: payment.status,
-        remarks: payment.description,
-        reference: payment.reference,
-        payment_id: payment.id,
-        customer_id: payment.links.customer,
-        date: payment.created_at,
-      },
-    });
+    console.log("creating payment in database");
+    entityService
+      .create("api::payment.payment", {
+        data: {
+          amount: payment.amount,
+          status: payment.status,
+          remarks: payment.description,
+          reference: payment.reference,
+          payment_id: payment.id,
+          customer_id: payment.links.customer,
+          date: payment.created_at,
+        },
+      })
+      .catch((e) => console.log("failed to save payment", e.message));
   }
 }
 
 async function syncBillingRequest(event, entityService) {
   const br = await getBillingRequest(event.links.billing_request);
-  const mandate = await getMandatesForBillingRequest(
-    event.links.customer,
-    br.metadata.shared_link
-  );
-  let data = {};
-  if (br.status) data.status = br.status;
-  if (mandate) {
-    data.mandate_status = mandate.status;
-    data.mandate_id = mandate.id;
+  console.log("**********Billing Request Event**************");
+  if (br.status) {
+    console.log("updating status of billing request", br.status);
+    const data = { status: br.status };
+    entityService.update(
+      "api::billing-request.billing-request",
+      { billing_request_id: br.id },
+      data
+    );
   }
-
-  entityService.update(
-    "api::billing-request.billing-request",
-    { billing_request_id: br.id },
-    data
-  );
 }
 
 async function syncMandate(event, entityService) {
   const mandate_id = event.links.mandate;
   const mandate = await getMandate(mandate_id);
+  console.log("****************Mandate Event***************");
   if (mandate.metadata.shared_link) {
     if (mandate.metadata.mtype === "recurring") {
-      entityService.update(
-        "api::billing-request.billing-request",
-        { shared_link: mandate.metadata.shared_link },
-        { mandate_id: mandate_id, mandate_status: mandate.status }
-      );
+      console.log("updating mandate in database(BillingRequest)");
+      entityService
+        .update(
+          "api::billing-request.billing-request",
+          { shared_link: mandate.metadata.shared_link },
+          { mandate_id: mandate_id, mandate_status: mandate.status }
+        )
+        .catch((e) => console.log("failed to update mandate", e.message));
+      console.log("mandate-status:", mandate.status);
       if (mandate.status === "active") {
         createWeeklyPayment(mandate, "7000");
         entityService.create("api::payment.payment", {
@@ -99,6 +105,12 @@ async function syncMandate(event, entityService) {
 }
 
 module.exports = {
+  getMandatesForBillingRequestList: async (ctx) => {
+    return getMandatesForBillingRequest(
+      ctx.query.customer_id,
+      ctx.query.shared_link
+    );
+  },
   getMandateDetails: async (ctx) => {
     const mandate = await getMandate(ctx.query.id);
     console.log(ctx.query);
@@ -116,6 +128,12 @@ module.exports = {
 
   generateFlow: async (ctx) => {
     return createBillingRequestFlow(ctx.query.billing_request_id);
+  },
+
+  createPayment: async (ctx) => {
+    const mandate = await getMandate(ctx.query.mandate_id);
+    if (mandate) return createWeeklyPayment(mandate, ctx.query.amount);
+    else ctx.body = "error";
   },
 
   handleEvent: async (ctx, next) => {
