@@ -24,7 +24,7 @@ async function createCustomerBillingRequest(data, entityService) {
       status: "init",
       flow_id: flow.id,
       authorization_url: flow.authorisation_url,
-      publishDate: new Date(),
+      publishedAt: new Date(),
     },
   });
   return response;
