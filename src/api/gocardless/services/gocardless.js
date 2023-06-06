@@ -33,14 +33,16 @@ const getMandate = async (mandate_id) => {
 };
 
 const getMandatesForBillingRequest = async (customer_id, shared_link) => {
-  const mandates = await client.mandates
+  const response = await client.mandates
     .list({ customer: customer_id })
     .catch((e) => {
       logError(e);
-      return [];
+      return { mandates: [] };
     });
-  console.log("mandates:", mandates);
-  return mandates.filter((v) => v.metadata.shared_link === shared_link);
+
+  return response.mandates.filter(
+    (v) => v.metadata.shared_link === shared_link
+  );
 };
 
 const getPayment = async (payment_id) => {
