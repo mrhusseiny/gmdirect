@@ -33,12 +33,13 @@ const getMandate = async (mandate_id) => {
 };
 
 const getMandatesForBillingRequest = async (customer_id, shared_link) => {
-  const mandates = client.mandates
+  const mandates = await client.mandates
     .list({ customer: customer_id })
     .catch((e) => {
       logError(e);
       return [];
     });
+  console.log("mandates:", mandates);
   return mandates.filter((v) => v.metadata.shared_link === shared_link);
 };
 
@@ -62,23 +63,23 @@ const getCustomer = async (customer_id) => {
 
 /// this function will be used to create payment after mandate is authorized by customer
 const createWeeklyPayment = async (mandate, amount, currency = "GBP") => {
-  const payment = await gocardless.payments
-    .create({
-      amount, // Amount in cents/pence (e.g., £10.00 is 1000)
-      currency,
-      links: {
-        mandate: mandate.id, // Replace with the mandate ID you obtained earlier
-      },
-      metadata: {
-        customer: mandate.links.customer,
-      },
-      description: "Weekly subscription payment",
-      interval: "1 week", // Specify the payment interval here
-    })
-    .catch((e) => {
-      logError(e);
-      return null;
-    });
+  const data = {
+    name: "Weekly subscription",
+    amount,
+    currency,
+    links: {
+      mandate: mandate.id, // Replace with the mandate ID you obtained earlier
+    },
+    metadata: {
+      customer: mandate.links.customer,
+    },
+    interval: 1, // Specify the payment interval here
+    interval_unit: "weekly",
+  };
+  const payment = await client.subscriptions.create(data).catch((e) => {
+    logError(e);
+    return null;
+  });
   return payment;
 };
 
