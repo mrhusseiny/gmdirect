@@ -15,6 +15,18 @@ const {} = require("@strapi/strapi").factories;
  * A set of functions called "actions" for `gocardless`
  */
 
+async function customUpdate(uid, filter_fields, data) {
+  const records = await strapi.entityService
+    .findMany(uid, filter_fields)
+    .catch((e) => []);
+  for (const record of records) {
+    strapi.entityService.update(uid, record.id, { data }).catch((e) => {
+      console.log("!------------Error-----------");
+      console.log(e);
+    });
+  }
+}
+
 async function syncPayment(event, entityService) {
   const payment = await getPayment(event.links.payment);
   console.log("*****************Payment Event****************");
@@ -27,18 +39,28 @@ async function syncPayment(event, entityService) {
 
   if (findResult.length === 1) {
     console.log("updating payment in database");
-    entityService
-      .update(
-        "api::payment.payment",
-        { payment_id: payment.id },
-        {
-          amount: payment.amount,
-          status: payment.status,
-          remarks: payment.description,
-          reference: payment.reference,
-        }
-      )
-      .catch((e) => console.log("failed to update payment in db", e.message));
+    customUpdate(
+      "api::payment.payment",
+      { payment_id: payment.id },
+      {
+        amount: payment.amount,
+        status: payment.status,
+        remarks: payment.description,
+        reference: payment.reference,
+      }
+    );
+    // entityService
+    //   .update(
+    //     "api::payment.payment",
+    //     { payment_id: payment.id },
+    //     {
+    //       amount: payment.amount,
+    //       status: payment.status,
+    //       remarks: payment.description,
+    //       reference: payment.reference,
+    //     }
+    //   )
+    //   .catch((e) => console.log("failed to update payment in db", e.message));
   } else {
     console.log("creating payment in database");
     entityService
@@ -63,7 +85,7 @@ async function syncBillingRequest(event, entityService) {
   if (br.status) {
     console.log("updating status of billing request", br.status);
     const data = { status: br.status };
-    entityService.update(
+    customUpdate(
       "api::billing-request.billing-request",
       { billing_request_id: br.id },
       data
@@ -78,13 +100,18 @@ async function syncMandate(event, entityService) {
   if (mandate.metadata.shared_link) {
     if (mandate.metadata.mtype === "recurring") {
       console.log("updating mandate in database(BillingRequest)");
-      entityService
-        .update(
-          "api::billing-request.billing-request",
-          { shared_link: mandate.metadata.shared_link },
-          { mandate_id: mandate_id, mandate_status: mandate.status }
-        )
-        .catch((e) => console.log("failed to update mandate", e.message));
+      customUpdate(
+        "api::billing-request.billing-request",
+        { shared_link: mandate.metadata.shared_link },
+        { mandate_id: mandate_id, mandate_status: mandate.status }
+      );
+      // entityService
+      //   .update(
+      //     "api::billing-request.billing-request",
+      //     { shared_link: mandate.metadata.shared_link },
+      //     { mandate_id: mandate_id, mandate_status: mandate.status }
+      //   )
+      //   .catch((e) => console.log("failed to update mandate", e.message));
       console.log("mandate-status:", mandate.status);
       if (mandate.status === "active") {
         createWeeklyPayment(mandate, "7000");
