@@ -51,7 +51,7 @@ const getPayment = async (payment_id) => {
     return null;
   });
   if (payment && payment.links.mandate) {
-    payment.mandate = await getMandateDetails(payment.links.mandate);
+    payment.mandate = await getMandate(payment.links.mandate);
   }
   return payment;
 };
