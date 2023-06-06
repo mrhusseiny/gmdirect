@@ -40,16 +40,14 @@ async function syncPayment(event) {
   );
 
   if (findResult.length === 1) {
-    customUpdate(
-      "api::payment.payment",
-      { payment_id: payment.id },
-      {
-        amount: payment.amount,
-        status: payment.status,
-        remarks: payment.description,
-        reference: payment.reference,
-      }
-    );
+    const data = {
+      amount: payment.amount,
+      status: payment.status,
+      remarks: payment.description,
+      reference: payment.reference,
+      customer_id: payment.mandate.links.customer,
+    };
+    customUpdate("api::payment.payment", { payment_id: payment.id }, data);
   } else {
     strapi.entityService
       .create("api::payment.payment", {
@@ -59,7 +57,7 @@ async function syncPayment(event) {
           remarks: payment.description,
           reference: payment.reference,
           payment_id: payment.id,
-          customer_id: payment.links.customer,
+          customer_id: payment.mandate.links.customer,
           date: payment.created_at,
         },
       })
