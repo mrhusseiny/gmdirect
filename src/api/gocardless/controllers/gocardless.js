@@ -15,21 +15,15 @@ const {} = require("@strapi/strapi").factories;
  * A set of functions called "actions" for `gocardless`
  */
 
-async function customUpdate(uid, filter_fields, data) {
+async function customUpdate(uid, filters, data) {
   const records = await strapi.entityService
-    .findMany(uid, filter_fields)
+    .findMany(uid, { filters })
     .catch((e) => []);
   for (const record of records) {
-    if (
-      record[Object.keys(filter_fields)[0]] ===
-      filter_fields[Object.keys(filter_fields)[0]]
-    ) {
-      console.log("updating...:", record);
-      strapi.entityService.update(uid, record.id, { data }).catch((e) => {
-        console.log("!------------Error-----------");
-        console.log(e);
-      });
-    }
+    strapi.entityService.update(uid, record.id, { data }).catch((e) => {
+      console.log("!------------Error-----------");
+      console.log(e);
+    });
   }
 }
 
@@ -74,14 +68,23 @@ async function syncPayment(event) {
 
 async function syncBillingRequest(event) {
   const br = await getBillingRequest(event.links.billing_request);
-
   if (br.status) {
     const data = { status: br.status };
-    customUpdate(
-      "api::billing-request.billing-request",
-      { billing_request_id: br.id },
-      data
-    );
+    const obj = strapi.entityService
+      .findMany("api::billing-request.billing-request", {
+        filters: { billing_request_id: br.id },
+      })
+      .then((v) => (v.length ? v[0] : null));
+    if (obj) {
+      const actions = obj.actions ?? [];
+      if (event.action) actions.push(event.action);
+      data.actions = [...new Set(actions)];
+      strapi.entityService
+        .update("api::billing-request.billing-request", obj.id, { data })
+        .catch((e) =>
+          console.log(`error saving billing request: ${e.mandate_status}`)
+        );
+    }
   }
 }
 

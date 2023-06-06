@@ -37,6 +37,9 @@
     },
     "details": {
       "type": "text"
+    },
+    "actions": {
+      "type": "json"
     }
   }
 }
