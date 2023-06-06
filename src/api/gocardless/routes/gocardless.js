@@ -11,7 +11,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/mandates",
+      path: "/gc/mandates",
       handler: "gocardless.getMandateDetails",
       config: {
         policies: [],
@@ -29,7 +29,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/customers",
+      path: "/gc/customers",
       handler: "gocardless.getCustomerDetails",
       config: {
         policies: [],
@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/payments",
+      path: "/gc/payments",
       handler: "gocardless.getPaymentDetails",
       config: {
         policies: [],
@@ -47,7 +47,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/generate-flow",
+      path: "/gc/generate-flow",
       handler: "gocardless.generateFlow",
       config: {
         policies: [],
@@ -56,7 +56,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/billing-request-mandates",
+      path: "/gc/billing-request-mandates",
       handler: "gocardless.getMandatesForBillingRequestList",
       config: {
         policies: [],
