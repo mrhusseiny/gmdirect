@@ -59,6 +59,7 @@ async function syncPayment(event) {
           payment_id: payment.id,
           customer_id: payment.mandate.links.customer,
           date: payment.created_at,
+          publishedDate: new Date(),
         },
       })
       .catch((e) => console.log("failed to save payment", e));
