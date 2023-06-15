@@ -70,21 +70,11 @@ async function syncBillingRequest(event) {
   const br = await getBillingRequest(event.links.billing_request);
   if (br.status) {
     const data = { status: br.status };
-    const obj = strapi.entityService
-      .findMany("api::billing-request.billing-request", {
-        filters: { billing_request_id: br.id },
-      })
-      .then((v) => (v.length ? v[0] : null));
-    if (obj) {
-      const actions = obj.actions ?? [];
-      if (event.action) actions.push(event.action);
-      data.actions = [...new Set(actions)];
-      strapi.entityService
-        .update("api::billing-request.billing-request", obj.id, { data })
-        .catch((e) =>
-          console.log(`error saving billing request: ${e.mandate_status}`)
-        );
-    }
+    customUpdate(
+      "api::billing-request.billing-request",
+      { billing_request_id: br.id },
+      data
+    );
   }
 }
 
@@ -98,9 +88,9 @@ async function syncMandate(event) {
         { shared_link: mandate.metadata.shared_link },
         { mandate_id: mandate_id, mandate_status: mandate.status }
       );
-      if (mandate.status === "pending_submission") {
-        createWeeklyPayment(mandate, "7000");
-      }
+      // if (mandate.status === "pending_submission") {
+      //   createWeeklyPayment(mandate, "7000");
+      // }
     }
   }
 }
@@ -133,7 +123,12 @@ module.exports = {
 
   createPayment: async (ctx) => {
     const mandate = await getMandate(ctx.query.mandate_id);
-    if (mandate) return createWeeklyPayment(mandate, ctx.query.amount);
+    if (mandate)
+      return createWeeklyPayment(
+        mandate,
+        ctx.query.amount,
+        ctx.query.invoice_id
+      );
     else ctx.body = "error";
   },
 

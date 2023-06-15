@@ -64,25 +64,47 @@ const getCustomer = async (customer_id) => {
 };
 
 /// this function will be used to create payment after mandate is authorized by customer
-const createWeeklyPayment = async (mandate, amount, currency = "GBP") => {
+const createWeeklyPayment = async (
+  mandate,
+  amount,
+  invoice,
+  currency = "GBP"
+) => {
   const data = {
-    name: "Weekly subscription",
     amount,
     currency,
-    links: {
-      mandate: mandate.id, // Replace with the mandate ID you obtained earlier
-    },
+    // charge_date: "2023-06-15",
+    // reference: "WINEBOX001",
     metadata: {
-      customer: mandate.links.customer,
+      order_dispatch_date: "2023-05-22",
+      invoice_id: invoice,
     },
-    interval: 1, // Specify the payment interval here
-    interval_unit: "weekly",
+    links: {
+      mandate: mandate.id,
+    },
   };
-  const payment = await client.subscriptions.create(data).catch((e) => {
-    logError(e);
-    return null;
-  });
+  console.log("creating payment:", data);
+  const payment = await client.payments.create(data).catch((e) => e.message);
   return payment;
+
+  // const data = {
+  //   amount,
+  //   currency,
+  //   links: {
+  //     mandate: mandate.id, // Replace with the mandate ID you obtained earlier
+  //   },
+  //   metadata: {
+  //     customer: mandate.links.customer,
+  //     invoice_id:invoice
+  //   },
+  //   interval: 1, // Specify the payment interval here
+  //   interval_unit: "weekly",
+  // };
+  // const payment = await client.subscriptions.create(data).catch((e) => {
+  //   logError(e);
+  //   return null;
+  // });
+  // return payment;
 };
 
 const createCustomer = async ({

@@ -42,6 +42,9 @@
     },
     "gc_customer_id": {
       "type": "string"
+    },
+    "qb_customer_id": {
+      "type": "string"
     }
   }
 }
