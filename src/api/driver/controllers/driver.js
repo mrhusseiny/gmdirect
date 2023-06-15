@@ -100,16 +100,16 @@ module.exports = createCoreController("api::driver.driver", ({ strapi }) => ({
     );
 
     if (response) ctx.request.body.data.gc_customer_id = response.id;
-    const response2 = await createQuickbooksCustomer({
-      ...ctx.request.body.data,
-    });
+    // const response2 = await createQuickbooksCustomer({
+    //   ...ctx.request.body.data,
+    // });
 
-    if (response2.success)
-      ctx.request.body.data.qb_customer_id = response2.Customer.Id;
+    // if (response2.success)
+    //   ctx.request.body.data.qb_customer_id = response2.Customer.Id;
 
-    const success = response || response2.success;
+    // const success = response || response2.success;
 
-    if (success) return super.create(ctx);
+    if (response) return super.create(ctx);
     return {
       error: response.error ?? [
         { message: "somthing went wrong, in the server!" },
